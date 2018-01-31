@@ -60,12 +60,14 @@ double d_distance_cost(vector<vector<double>> vals, vector<int> intended_lanes, 
 }
 
 
-double s_distance_cost(vector<vector<double>> vals, vector<int> intended_lanes, double cur_s, int HORIZON, double DT, double TARGET_V, vector<double> map_x, vector<double> map_y) {
+double s_distance_cost(vector<vector<double>> vals, vector<int> intended_lanes, double cur_s, int HORIZON, double DT, double TARGET_V, double MAX_S, vector<double> map_x, vector<double> map_y) {
   const double MAX_DIST = (HORIZON+15)*DT*TARGET_V;
   int path_size = vals[0].size();
   double temp_yaw = atan2(vals[1][path_size-1] - vals[1][path_size-2], vals[0][path_size-1] - vals[0][path_size-2]);
   vector<double> temp_frenet = getFrenet(vals[0][path_size-1], vals[1][path_size-1], temp_yaw, map_x, map_y);
-  double dist = temp_frenet[0] - cur_s;
+  double end_s = temp_frenet[0];
+  if (end_s < cur_s) {end_s += MAX_S;}
+  double dist = end_s - cur_s;
   double cost = (MAX_DIST - dist) / MAX_DIST;
   return cost;
 }
@@ -100,19 +102,19 @@ double collision_cost(vector<vector<double>> vals, vector<double> BUFFER_DIST, v
 }
   
 
-double total_cost(vector<vector<double>> vals, vector<int> intended_lanes, vector<double> lane_speed, double cur_s, vector<double> BUFFER_DIST, double LANE_WIDTH, int HORIZON, double TARGET_V, double MAX_A, double DT, vector<double> map_x, vector<double> map_y, map<int, vector<Vehicle>> predict_cur) {
+double total_cost(vector<vector<double>> vals, vector<int> intended_lanes, vector<double> lane_speed, double cur_s, vector<double> BUFFER_DIST, double LANE_WIDTH, int HORIZON, double TARGET_V, double MAX_S, double MAX_A, double DT, vector<double> map_x, vector<double> map_y, map<int, vector<Vehicle>> predict_cur) {
   
   //Cost coeffs have different orders of magnitude because they operate as logic gates
-  const double Ki = 100.0;
-  const double Kdd = 0.4;
-  const double Ksd = 0.6;
+  const double Ki = 10.0;
+  const double Kdd = 1.0;
+  const double Ksd = 1.0;
   
   // BOOLEAN COSTS
   const double Kc = 100.0;
   
   double Ci = inefficiency_cost(vals, intended_lanes, lane_speed, TARGET_V);
   double Cdd = d_distance_cost(vals, intended_lanes, LANE_WIDTH, map_x, map_y);
-  double Csd = s_distance_cost(vals, intended_lanes, cur_s, HORIZON, DT, TARGET_V, map_x, map_y);
+  double Csd = s_distance_cost(vals, intended_lanes, cur_s, HORIZON, DT, TARGET_V, MAX_S, map_x, map_y);
   double Cc = collision_cost(vals, BUFFER_DIST, map_x, map_y, predict_cur);
 
   return Ki*Ci + Kdd*Cdd + Ksd*Csd + Kc*Cc; // + Kacc*Cacc + Kjerk*Cjerk;

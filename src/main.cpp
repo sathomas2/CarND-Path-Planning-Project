@@ -121,7 +121,7 @@ int main() {
           double car_d = j[1]["d"];
           double car_yaw = j[1]["yaw"];
           double car_speed = j[1]["speed"];
-          
+
           // Previous path data given to the Planner
           vector<double> previous_path_x = j[1]["previous_path_x"];
           vector<double> previous_path_y = j[1]["previous_path_y"];
@@ -132,22 +132,13 @@ int main() {
           vector<vector<double>> sensor_fusion = j[1]["sensor_fusion"];
           
           pp.update_predictions(sensor_fusion, car_x, car_y, car_s);
-          vector<double> next_x_vals;
-          vector<double> next_y_vals;
 
-          // only generate new trajectry about every half-second. This helps smoothing and leaves time for collision detection. Although during these off-passes, could check for collisions and udpate trajectory if there is going to be one.
-          if (previous_path_x.size() < 230) {
-            pp.set_ego(car_x, car_y, car_s, car_d, car_yaw, car_speed, previous_path_x, previous_path_y, end_path_s, end_path_d);
+          pp.set_ego(car_x, car_y, car_s, car_d, car_yaw, car_speed, previous_path_x, previous_path_y, end_path_s, end_path_d);
             
-            vector<vector<double>> next_vals = pp.generate_best_trajectory();
-            next_x_vals = next_vals[0];
-            next_y_vals = next_vals[1];
-          }
-          else {
-            next_x_vals = previous_path_x;
-            next_y_vals = previous_path_y;
-          }
-          
+          vector<vector<double>> next_vals = pp.generate_best_trajectory();
+          vector<double> next_x_vals = next_vals[0];
+          vector<double> next_y_vals = next_vals[1];
+      
           json msgJson;
           msgJson["next_x"] = next_x_vals;
           msgJson["next_y"] = next_y_vals;

@@ -25,6 +25,7 @@
 using namespace std;
 
 
+const double MAX_S = 6945.554;
 const int N_LANES = 3;
 const double LANE_WIDTH = 4;
 const double DT = 0.02;
@@ -110,6 +111,8 @@ void PathPlanner::update_predictions(vector<vector<double>> sensor_fusion, doubl
       for (int k=0; k<HORIZON; ++k) {
         double temp_s_dot = car_s_dot + avg_car_s_dot_dot*DT*k;
         double temp_s = car_s + car_s_dot*DT*k + 0.5*avg_car_s_dot_dot*DT*k*DT*k;
+        while (temp_s > MAX_S) {temp_s -= MAX_S;}
+
         vector<double> temp_xy = getXY(temp_s, car_d, map_s, map_x, map_y);
         Vehicle temp_pred = {car_lane, temp_xy[0], temp_xy[1], temp_s, temp_s_dot, car_s_dot_dot, car_d, 0.0, 0.0, "KL", temp_dt};
         predict_cur[car_id].push_back(temp_pred);
@@ -207,7 +210,7 @@ vector<vector<double>> PathPlanner::generate_best_trajectory() {
   vector<vector<vector<double>>> KL_trajectories = generate_lane_trajectory(goal_d);
   n_paths_generated += KL_trajectories.size();
 
-  double best_cost = total_cost(KL_trajectories[0], {ego.lane, ego.lane}, lane_speed, cur_s, BUFFER_DIST, LANE_WIDTH, HORIZON, TARGET_V, MAX_A, DT, map_x, map_y, predict_cur);
+  double best_cost = total_cost(KL_trajectories[0], {ego.lane, ego.lane}, lane_speed, cur_s, BUFFER_DIST, LANE_WIDTH, HORIZON, TARGET_V, MAX_S, MAX_A, DT, map_x, map_y, predict_cur);
   
   // if previous goal state was Change Lanes and have successfully changed lanes, encourage staying in the lane for one pass
   if ((temp_goal_state != prev_state) && (temp_goal_lane == prev_goal_lane)) {
@@ -221,7 +224,7 @@ vector<vector<double>> PathPlanner::generate_best_trajectory() {
   cur_best_goal_lane = temp_goal_lane;
   
   for (int i=1; i<KL_trajectories.size(); ++i) {
-    double temp_cost = total_cost(KL_trajectories[i], {ego.lane, ego.lane}, lane_speed, cur_s, BUFFER_DIST, LANE_WIDTH, HORIZON, TARGET_V, MAX_A, DT, map_x, map_y, predict_cur);
+    double temp_cost = total_cost(KL_trajectories[i], {ego.lane, ego.lane}, lane_speed, cur_s, BUFFER_DIST, LANE_WIDTH, HORIZON, TARGET_V, MAX_S, MAX_A, DT, map_x, map_y, predict_cur);
     
     // if previous goal state was Change Lanes and have yet to successfully change lanes, encourage to keep changing
     if ((temp_goal_state != prev_state) && (temp_goal_lane == prev_goal_lane)) {
@@ -244,7 +247,7 @@ vector<vector<double>> PathPlanner::generate_best_trajectory() {
     n_paths_generated += TL_trajectories.size();
     
     for (int k=0; k<TL_trajectories.size(); ++k) {
-      double temp_cost = total_cost(TL_trajectories[k], {ego.lane, temp_goal_lane}, lane_speed, cur_s, BUFFER_DIST, LANE_WIDTH, HORIZON, TARGET_V, MAX_A, DT, map_x, map_y, predict_cur);
+      double temp_cost = total_cost(TL_trajectories[k], {ego.lane, temp_goal_lane}, lane_speed, cur_s, BUFFER_DIST, LANE_WIDTH, HORIZON, TARGET_V, MAX_S, MAX_A, DT, map_x, map_y, predict_cur);
       if ((temp_goal_state == prev_state) && (temp_goal_lane == prev_goal_lane)) {
         temp_cost *= 0.01;
       }
@@ -267,7 +270,7 @@ vector<vector<double>> PathPlanner::generate_best_trajectory() {
     n_paths_generated += TR_trajectories.size();
     
     for (int j=0; j<TR_trajectories.size(); ++j) {
-      double temp_cost = total_cost(TR_trajectories[j], {ego.lane, temp_goal_lane}, lane_speed, cur_s, BUFFER_DIST, LANE_WIDTH, HORIZON, TARGET_V, MAX_A, DT, map_x, map_y, predict_cur);
+      double temp_cost = total_cost(TR_trajectories[j], {ego.lane, temp_goal_lane}, lane_speed, cur_s, BUFFER_DIST, LANE_WIDTH, HORIZON, TARGET_V, MAX_S, MAX_A, DT, map_x, map_y, predict_cur);
 
       // if previous goal state was Change Lanes and have yet to successfully change lanes, encourage to keep changing
       if ((temp_goal_state == prev_state) && (temp_goal_lane == prev_goal_lane)) {
@@ -341,7 +344,20 @@ vector<vector<vector<double>>> PathPlanner::generate_lane_trajectory(double new_
   
   for (int i=0; i<3; ++i) {
     double gap = 35+10*i;
-    all_goals_s.push_back({ego.s+gap, ego.s+2*gap, ego.s+3*gap, ego.s+4*gap});
+
+    double s0 = ego.s + gap;
+    while (s0 > MAX_S) {s0 -= MAX_S;}
+
+    double s1 = ego.s + 2*gap;
+    while (s1 > MAX_S) {s1 -= MAX_S;}
+
+    double s2 = ego.s + 3*gap;
+    while (s2 > MAX_S) {s2 -= MAX_S;}
+
+    double s3 = ego.s + 4*gap;
+    while (s3 > MAX_S) {s3 -= MAX_S;}
+
+    all_goals_s.push_back({s0, s1, s2, s3});
     temp_gaps.push_back(gap);
   }
  
