@@ -134,6 +134,8 @@ int main() {
           pp.update_predictions(sensor_fusion, car_x, car_y, car_s);
           vector<double> next_x_vals;
           vector<double> next_y_vals;
+
+          // only generate new trajectry about every half-second. This helps smoothing and leaves time for collision detection. Although during these off-passes, could check for collisions and udpate trajectory if there is going to be one.
           if (previous_path_x.size() < 230) {
             pp.set_ego(car_x, car_y, car_s, car_d, car_yaw, car_speed, previous_path_x, previous_path_y, end_path_s, end_path_d);
             

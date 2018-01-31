@@ -104,8 +104,8 @@ double total_cost(vector<vector<double>> vals, vector<int> intended_lanes, vecto
   
   //Cost coeffs have different orders of magnitude because they operate as logic gates
   const double Ki = 100.0;
-  const double Kdd = 0.333;
-  const double Ksd = 0.666;
+  const double Kdd = 0.4;
+  const double Ksd = 0.6;
   
   // BOOLEAN COSTS
   const double Kc = 100.0;

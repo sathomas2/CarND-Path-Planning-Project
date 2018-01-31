@@ -223,7 +223,7 @@ vector<vector<double>> PathPlanner::generate_best_trajectory() {
   for (int i=1; i<KL_trajectories.size(); ++i) {
     double temp_cost = total_cost(KL_trajectories[i], {ego.lane, ego.lane}, lane_speed, cur_s, BUFFER_DIST, LANE_WIDTH, HORIZON, TARGET_V, MAX_A, DT, map_x, map_y, predict_cur);
     
-    // if previous goal state was Change Lanes and have successfully changed lanes, encourage staying in the lane for one pass
+    // if previous goal state was Change Lanes and have yet to successfully change lanes, encourage to keep changing
     if ((temp_goal_state != prev_state) && (temp_goal_lane == prev_goal_lane)) {
       temp_cost *= 0.01;
     }
@@ -268,6 +268,8 @@ vector<vector<double>> PathPlanner::generate_best_trajectory() {
     
     for (int j=0; j<TR_trajectories.size(); ++j) {
       double temp_cost = total_cost(TR_trajectories[j], {ego.lane, temp_goal_lane}, lane_speed, cur_s, BUFFER_DIST, LANE_WIDTH, HORIZON, TARGET_V, MAX_A, DT, map_x, map_y, predict_cur);
+
+      // if previous goal state was Change Lanes and have yet to successfully change lanes, encourage to keep changing
       if ((temp_goal_state == prev_state) && (temp_goal_lane == prev_goal_lane)) {
         temp_cost *= 0.01;
      }
@@ -284,13 +286,6 @@ vector<vector<double>> PathPlanner::generate_best_trajectory() {
   
   prev_goal_lane = cur_best_goal_lane;
   prev_state = cur_best_prev_state;
-  
-  cout << "Cur s: " << cur_s << "        Max s: " << 6945.554 << endl;
-  cout << "Trajs generated: " << n_paths_generated << endl;
-  cout << "Best gap size: " << best_gap << endl;
-  cout << "Best goal dist: " << best_gd << endl;
-  cout << "Best cost " << best_cost << endl;
-  cout << endl;
   
   return best_vals;
 }

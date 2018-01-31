@@ -15,19 +15,6 @@
 
 using namespace std;
 
-//struct Vehicle_Pred {
-//  int lane;
-//  double x;
-//  double y;
-//  double s;
-//  double s_dot;
-//  double s_dot_dot;
-//  double d;
-//  double d_dot;
-//  double d_dot_dot;
-//  double dt;
-//};
-
 struct Vehicle {
   int lane;
   double x;
