@@ -24,8 +24,6 @@
 
 using namespace std;
 
-using Eigen::MatrixXd;
-using Eigen::VectorXd;
 
 const int N_LANES = 3;
 const double LANE_WIDTH = 4;

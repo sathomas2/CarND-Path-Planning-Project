@@ -12,7 +12,6 @@
 #include <chrono>
 #include <map>
 #include <string>
-#include "Eigen/Dense"
 
 using namespace std;
 
