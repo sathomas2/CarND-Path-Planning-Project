@@ -73,7 +73,7 @@ The inefficiency cost is:
  <p></p>
 where Vcl is the average velocity of ego's current lane, Vil is of ego's goal lane, Vfl is of the fast lane. Ki = 10. Also, if the fast lane is 2 lanes over from ego, ego treats the lane 1 lane over as the fast lane, encouraging 2 lane switches when appropriate, for example see the below image making the first of a two lane change (cost.h lines 25-41).
 <figure>
-  <img src="readme_images/double_lane_change.png.png"/>
+  <img src="readme_images/double_lane_change.png"/>
 </figure>
  <p></p>
 
