@@ -2,8 +2,6 @@
 //  helper_functions.h
 //  path_planning
 //
-//  Created by Steven Thomas on 1/15/18.
-//
 
 #ifndef helper_functions_h
 #define helper_functions_h
