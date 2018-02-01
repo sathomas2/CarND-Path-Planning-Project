@@ -58,6 +58,7 @@ For each trajectory, a spline is fit to the last 2 points of the leftover previo
 
 ### Choosing Optimal Trajectory
 There are 4 cost functions that are weighted and added together to form a final cost for each trajectory. The trajectory with the lowest cost is chosen.
+
 <figure>
   <img src="readme_images/total_cost.png"/>
 </figure>
@@ -67,23 +68,24 @@ where Cc is collision cost, Ci is inefficiency cost, Csd is s distance cost, Cdd
 When calculating the 250 points, there are checks ensuring that the velocity, acceleration, and jerk never pass their limits. Along with the goal distances described above, this should ensure that there are no collisions. Collisions, however, can sometimes occur when other cars decelerate or change lanes rapidly. Or ego may find itself too close for comfort to a car. Therefore, all 18 or 27 trajectories are run through a Boolean collision cost function with a large buffer of 10m in front or behind and 2.75m on either side of ego. If at any timestamp along a potential trajectory any car on the road at that timestamp is within the buffer, cost = 1. Kc = 100. Therefore, if a trajectory doesn't pass the collision test it will not be chosen (cost.h lines 76-102).
 
 The inefficiency cost is:
+
 <figure>
   <img src="readme_images/inefficiency_cost.png"/>
 </figure>
  <p></p>
 where Vcl is the average velocity of ego's current lane, Vil is of ego's goal lane, Vfl is of the fast lane. Ki = 10. Also, if the fast lane is 2 lanes over from ego, ego treats the lane 1 lane over as the fast lane, encouraging 2 lane switches when appropriate, for example see the below image making the first of a two lane change (cost.h lines 25-41).
+
 <figure>
   <img src="readme_images/double_lane_change.png"/>
 </figure>
  <p></p>
-
-
+ 
 The s distance cost is:
 <figure>
   <img src="readme_images/s_cost.png"/>
 </figure>
  <p></p>
-where Smax is the maximum distance ego can travel at the max velocity, and S is the s distance ego would travel on this trajectory or the difference between the end s frenet coordinate and the start s. Ks = 1 (cost.h lines 63-73).
+where Smax is the maximum distance ego can travel at the max velocity, and S is the s distance ego would travel on this trajectory or the difference between the end s frenet coordinate and the start s. Ks = 1 (cost.h lines 63-73). 
 
 The d distance cost is the percentage of the time along the trajectory the d frenet coordinate is greater than 1m away from the center of the goal lane. Kd = 1 (cost.h lines 44-60).
 
@@ -92,5 +94,4 @@ The d distance cost is the percentage of the time along the trajectory the d fre
   <img src="readme_images/lane_weave.png"/>
 </figure>
  <p></p>
-
 Given the current K values, ego's priority is to be in the fast lane, except when the fast lane is barely faster than another lane, then both the s and d distance costs encourage maintaining the current lane or the smoothest possible lane change. The constraints built into the trajectory generation steps ensure ego maintains a safe distance and speed. That said, lowering Ki goes a long way in creating a less impatient car. In the simulation most cars travel significantly under the speed limit, and with the current weights ego can weave in and out of traffic perhaps more than an autonomous car should.
