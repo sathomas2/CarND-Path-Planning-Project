@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <iostream>
 #include <cmath>
-#include <algorithm>
 #include <map>
 #include <string>
 #include <iterator>
@@ -72,7 +71,7 @@ void PathPlanner::update_predictions(vector<vector<double>> sensor_fusion, doubl
     
     double dist_diff = distance(ego_x, ego_y, car_x, car_y);
     if ((car_lane >= 0) && (car_s_dot > 0)){
-      //Track current speed of every car by lane if it's ahead of car with 5m buffer behind
+      //Track current speed of every car by lane if it's ahead of car with 1m buffer behind
       double max_dist = HORIZON*DT*TARGET_V*0.25;
       if ((car_lane==0) && (car_s > ego_s - 1) && (dist_diff < max_dist)) {
         lane_n[0] += 1;
@@ -286,7 +285,7 @@ vector<vector<double>> PathPlanner::generate_best_trajectory() {
       }
     }
   }
-  
+
   prev_goal_lane = cur_best_goal_lane;
   prev_state = cur_best_prev_state;
   
@@ -318,7 +317,6 @@ vector<vector<vector<double>>> PathPlanner::generate_lane_trajectory(double new_
   double goal_dist;
   vector<double> temp_gds;
   if (FOLLOW) {
-    //cout << "FOLLOWING..." << endl;
     double goal_x;
     double goal_y;
     for (int i=0; i<3; ++i) {

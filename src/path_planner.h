@@ -33,8 +33,8 @@ struct Vehicle {
 
 class PathPlanner {
 public:
-
-	vector<double> map_x;
+	
+  vector<double> map_x;
   vector<double> map_y;
   vector<double> map_s;
   

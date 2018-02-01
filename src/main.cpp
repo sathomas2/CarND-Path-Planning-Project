@@ -94,6 +94,7 @@ int main() {
   	map_waypoints_dy.push_back(d_y);
   }
   
+  // Create PathPlanner and initialize with maps
   PathPlanner pp(map_waypoints_x, map_waypoints_y, map_waypoints_s);
 
   h.onMessage([&pp](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
@@ -131,10 +132,13 @@ int main() {
           // Sensor Fusion Data, a list of all other cars on the same side of the road.
           vector<vector<double>> sensor_fusion = j[1]["sensor_fusion"];
           
+          // Update predictions with new sensor fusion data
           pp.update_predictions(sensor_fusion, car_x, car_y, car_s);
 
+          // Set ego current state
           pp.set_ego(car_x, car_y, car_s, car_d, car_yaw, car_speed, previous_path_x, previous_path_y, end_path_s, end_path_d);
-            
+          
+          // Generate optimal trajectory and send to simulator  
           vector<vector<double>> next_vals = pp.generate_best_trajectory();
           vector<double> next_x_vals = next_vals[0];
           vector<double> next_y_vals = next_vals[1];
