@@ -1,4 +1,4 @@
-# Generating Optimal Highway Trajectories for Autonomous Cars
+# Highway Path Planning for Autonomous Cars
 <figure>
   <img src=""/>
 </figure>
