@@ -31,7 +31,7 @@ const double DT = 0.02;
 const int HORIZON = 250;
 const int N_PREV_PATH = 30;
 const double TARGET_V = mph2mps(49.0);
-const double MAX_A = 5.0;
+const double MAX_A = 4.0;
 const vector<double> BUFFER_DIST = {10.0, 2.75};
 
 PathPlanner::PathPlanner() {}
@@ -101,7 +101,7 @@ void PathPlanner::update_predictions(vector<vector<double>> sensor_fusion, doubl
       
       prev_t = cur_t;
       
-      if (predict_past_acc[car_id].size() > 10) {
+      if (predict_past_acc[car_id].size() > 25) {
         predict_past_acc[car_id].erase(predict_past_acc[car_id].begin());
         predict_past_v[car_id].erase(predict_past_v[car_id].begin());
       }
@@ -320,7 +320,7 @@ vector<vector<vector<double>>> PathPlanner::generate_lane_trajectory(double new_
     double goal_x;
     double goal_y;
     for (int i=0; i<3; ++i) {
-      double gd = 45 + 20*(2-i);
+      double gd = 50 + 20*(2-i);
       goal_x = predict_cur[goal_idx][ego.T + end_t - gd].x;
       goal_y = predict_cur[goal_idx][ego.T + end_t - gd].y;
       goal_dist = distance(ego.x, ego.y, goal_x, goal_y);
@@ -452,8 +452,8 @@ vector<vector<double>> PathPlanner::generate_trajectory(double goal_dist, vector
   if (temp_a > MAX_A) {
     cur_a = MAX_A;
   }
-  else if (temp_a < -1*MAX_A) {
-    cur_a = -1*MAX_A;
+  else if (temp_a < -1*(MAX_A+2)) {
+    cur_a = -1*(MAX_A+2);
   }
   else {
     cur_a = temp_a;
