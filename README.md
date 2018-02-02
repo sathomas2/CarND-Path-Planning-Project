@@ -95,7 +95,7 @@ The d distance cost is the percentage of the time along the trajectory the d fre
 
 ### Results
 <figure>
-<img src="readme_images/lane_weave.png"/>
+<img src="readme_images/close.png"/>
 </figure>
 <p></p>
 
