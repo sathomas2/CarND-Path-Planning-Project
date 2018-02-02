@@ -78,9 +78,11 @@ The inefficiency cost is:
 where Vcl is the average velocity of ego's current lane, Vil is of ego's goal lane, Vfl is of the fast lane. Ki = 10. Also, if the fast lane is 2 lanes over from ego, ego treats the lane 1 lane over as the fast lane, encouraging 2 lane switches when appropriate, for example see the below image of ego making the first of a two lane change (cost.h lines 25-41).
 
 <figure>
-  <img src="readme_images/double_lane_change.png"/>
+<img src="readme_images/double_lane_change.png"/>
 </figure>
 <p></p>
+
+The d distance cost is the percentage of the time along the trajectory the d frenet coordinate is greater than 1m away from the center of the goal lane. Kd = 1 (cost.h lines 44-60).
 
 The s distance cost is:
 
@@ -89,9 +91,7 @@ The s distance cost is:
 </figure>
 <p></p>
 
-where Smax is the maximum distance ego can travel at the max velocity, and S is the s distance ego would travel on this trajectory or the difference between the end s frenet coordinate and the start s. Ks = 1 (cost.h lines 63-73). 
-
-The d distance cost is the percentage of the time along the trajectory the d frenet coordinate is greater than 1m away from the center of the goal lane. Kd = 1 (cost.h lines 44-60).
+where Smax is the maximum distance ego can travel at the max velocity, and S is the s distance ego would travel on this trajectory or the difference between the end s frenet coordinate and the start s. Ks = 0.1 (cost.h lines 63-73). 
 
 ### Results
 <figure>
